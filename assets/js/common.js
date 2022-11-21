@@ -72,6 +72,12 @@
 		'role': function() {
 			return $('#tmplRole').html();
 		},
+		'work': function() {
+			return $('#tmplWork').html();
+		},
+		'hobbies': function() {
+			return $('#tmplPersonalProjects').html();
+		},
 		'experience': function() {
 			return $('#tmplExperience').html();
 		},
@@ -131,7 +137,8 @@
 		matrixEffect(canvas, context, columns, maxStackHeight);
 	};
 
-	function textTypingEffect(elem, charIndex = 0, direction = 'right') {
+	function textTypingEffect(parentElem, elem, charIndex = 0, direction = 'right') {
+		parentElem = parentElem || $('body');
 		let typingContent = elem.prop('typingContent');
 
 		if (charIndex == 0) {
@@ -139,15 +146,15 @@
 			elem.html('');
 		} else if (charIndex > typingContent.length) {
 			if (elem.prop('typingSeqElements') != undefined) {
-				$('.typing-effect[data-type-seq="' + elem.prop('typingSeqElements') + '"]').each(function() {
-					textTypingEffect($(this));
+				parentElem.find('.typing-effect[data-type-seq="' + elem.prop('typingSeqElements') + '"]').each(function() {
+					textTypingEffect(parentElem, $(this));
 				});
 			}
 
 			if (elem.hasClass('type-infinite')) {
 				// After typed entire sentence, delete them
 				setTimeout(() => {
-					textTypingEffect(elem, (typingContent.length - 1), 'left');
+					textTypingEffect(parentElem, elem, (typingContent.length - 1), 'left');
 				}, 1000);
 			} else {
 				// Retain blinking cursor on last element
@@ -162,7 +169,7 @@
 		} else if (charIndex < 0) {
 			// After deleted all the letters, start typing
 			setTimeout(() => {
-				textTypingEffect(elem, 0);
+				textTypingEffect(parentElem, elem, 0);
 			}, 1000);
 
 			return;
@@ -171,7 +178,7 @@
 		elem.html(typingContent.substr(0, charIndex));
 
 		setTimeout(() => {
-			textTypingEffect(elem, (direction == 'right' ? charIndex + 1 : charIndex - 1), direction);
+			textTypingEffect(parentElem, elem, (direction == 'right' ? charIndex + 1 : charIndex - 1), direction);
 		}, 50);
 	}
 
@@ -185,7 +192,7 @@
 
 			// Initialize sequenced containers later
 			if ($(this).attr('data-type-seq') == undefined) {
-				textTypingEffect($(this));
+				textTypingEffect(parentElem, $(this));
 			} else {
 				$(this).html('');
 
@@ -216,11 +223,11 @@
 
 			seq.forEach(function(secondPart, i) {
 				if (i < (seq.length - 1)) {
-					$(`.typing-effect[data-type-seq="${firstPart}-${ secondPart }"]`).prop('typingSeqElements', `${firstPart}-${seq[i + 1]}`);
+					parentElem.find(`.typing-effect[data-type-seq="${firstPart}-${ secondPart }"]`).prop('typingSeqElements', `${firstPart}-${seq[i + 1]}`);
 				}
 			});
 
-			textTypingEffect($(`.typing-effect[data-type-seq="${firstPart}-${ seq[0] }"]`));
+			textTypingEffect(parentElem, parentElem.find(`.typing-effect[data-type-seq="${firstPart}-${ seq[0] }"]`));
 		});
 	}
 
@@ -239,10 +246,13 @@
 	function onEnterPressed() {
 		let linuxConsole = $('#linuxConsole');
 		let command = linuxConsole.find('.linux-console-cmd-row:last').find('.linux-console-cmd-row-cmd-txt').val();
+		command = command.toLowerCase().trim();
 
-		Storage.Array('history').append(command);
+		if (command.length > 0) {
+			Storage.Array('history').append(command);
 
-		executeCommand(command);
+			executeCommand(command);
+		}
 
 		commandIndex = -1;
 
@@ -251,23 +261,27 @@
 
 	function executeCommand(command) {
 		command = command.toLowerCase().trim();
-		let commandArray = command.split(' ');
-		let commandName = commandArray[0];
-		let commandArgs = commandArray.slice(1);
-		let output = 'Command not found!';
+		// Array.filter(element => element) to remove empty elements
+		let commandArray = command.split(' ').filter(tempCommand => tempCommand);
 
-		if (commandName) {
-			let commandFn = commandsList[commandName];
+		if (commandArray.length > 0) {
+			let commandName = commandArray[0];
+			let commandArgs = commandArray.slice(1);
+			let output = 'Command not found!';
 
-			if (commandFn) {
-				output = commandFn.apply(null, commandArgs) || '';
+			if (commandName) {
+				let commandFn = commandsList[commandName];
+
+				if (commandFn) {
+					output = commandFn.apply(null, commandArgs) || '';
+				}
 			}
-		}
 
-		$('#linuxConsole').find('.linux-console-cmd-row:last').after($('#tmplCommandOutput').html().replace('OUTPUT', output));
+			$('#linuxConsole').find('.linux-console-cmd-row:last').after($('#tmplCommandOutput').html().replace('OUTPUT', output));
 
-		if ($('#linuxConsole').find('.linux-console-cmd-output .typing-effect').length > 0) {
-			initTypingEffect($('#linuxConsole').find('.linux-console-cmd-output'));
+			if ($('#linuxConsole').find('.linux-console-cmd-output:last .typing-effect').length > 0) {
+				initTypingEffect($('#linuxConsole').find('.linux-console-cmd-output:last'));
+			}
 		}
 	}
 
@@ -334,6 +348,10 @@
 			e.stopPropagation();
 
 			showCommandFromHistory('next');
+		} else if(pressedKeyCode == 9) {
+			// IF TAB pressed
+			e.preventDefault();
+			e.stopPropagation();
 		}
 	});
 
@@ -354,6 +372,15 @@
 		if (!$(e.target).is('.linux-console .linux-console-cmd-row')) {
 			$('#linuxConsole').find('.linux-console-cmd-row:last').find('.linux-console-cmd-row-cmd-txt').focus();
 		}
+	});
+
+	$(document).on('click', '.execute-cmd', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		let commandToExecute = $(this).attr('data-cmd');
+		$('#linuxConsole').find('.linux-console-cmd-row:last').find('.linux-console-cmd-row-cmd-txt').val(commandToExecute);
+		onEnterPressed();
 	});
 
 	$(document).ready(function() {

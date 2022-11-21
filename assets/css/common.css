@@ -1,5 +1,6 @@
 :root {
-	--padding: 0.2rem;
+	--paddingHorizontal: 0.4rem;
+	--paddingVertical: 0.2rem;
 
 	/*
 	Ubuntu Theme:
@@ -47,19 +48,19 @@ html, body {
 }
 
 .linux-console-container > .linux-console {
-	width: calc(100% - (var(--padding) * 2));
-	min-height: calc(100% - (var(--padding) * 2));
+	width: calc(100% - (var(--paddingHorizontal) * 2));
+	min-height: calc(100% - (var(--paddingVertical) * 2));
 	background: var(--consoleBgColor);
 	color: var(--consoleTextColor);
-	padding: var(--padding);
+	padding: var(--paddingVertical) var(--paddingHorizontal);
 	overflow-y: auto;
 }
 
 .linux-console-container > .linux-console > .linux-console-cmd-row,
 .linux-console-container > .linux-console > .linux-console-cmd-output {
-	width: calc(100% - (var(--padding) * 2));
+	width: calc(100% - (var(--paddingHorizontal) * 2));
 	display: flex;
-	margin-bottom: var(--padding);
+	margin-bottom: var(--paddingVertical);
 	margin-left: 0;
 	margin-right: 0;
 }
@@ -122,12 +123,22 @@ html, body {
 	margin-bottom: 0.5rem;
 }
 
-.linux-console-container > .linux-console > .linux-console-cmd-output h1 {
+.linux-console-container > .linux-console > .linux-console-cmd-output h1,
+.linux-console-container > .linux-console > .linux-console-cmd-output h2,
+.linux-console-container > .linux-console > .linux-console-cmd-output h3,
+.linux-console-container > .linux-console > .linux-console-cmd-output h4,
+.linux-console-container > .linux-console > .linux-console-cmd-output h5,
+.linux-console-container > .linux-console > .linux-console-cmd-output h6 {
 	margin-top: 0;
 	margin-bottom: 0;
 }
 
-.linux-console-container > .linux-console > .linux-console-cmd-output h1:not(:last-child) {
+.linux-console-container > .linux-console > .linux-console-cmd-output h1:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output h2:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output h3:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output h4:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output h5:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output h6:not(:last-child) {
 	margin-bottom: 1rem;
 }
 
@@ -149,4 +160,27 @@ a:hover {
 
 .m-0 {
 	margin: 0 !important;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.card {
+	position: relative;
+	border: 1px dashed;
+	padding: var(--paddingVertical) var(--paddingHorizontal);
+	margin: 0 !important;
+}
+
+.card-title {
+	border-bottom: 1px dashed;
+	padding-bottom: var(--paddingVertical);
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	row-gap: 1em;
+	column-gap: 1em;
 }
