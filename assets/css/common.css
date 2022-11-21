@@ -1,0 +1,152 @@
+:root {
+	--padding: 0.2rem;
+
+	/*
+	Ubuntu Theme:
+	--consoleBgColor: #340024;
+	--consoleTextColor: #fff;
+	--consoleUserInfoTextColor: #23f706;
+	--consoleCurrDirTextColor: #039be5;
+	*/
+
+	--consoleBgColor: #000;
+	--consoleTextColor: #fff;
+	--consoleUserInfoTextColor: #23f706;
+	--consoleCurrDirTextColor: #039be5;
+}
+
+@font-face {
+	src: url('./fonts/Ubuntu-R.ttf');
+	font-family: AppFont;
+}
+
+body, body * {
+	font-family: AppFont !important;
+}
+
+input {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+html, body {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100vh;
+}
+
+.matrix-effect-container, .matrix-effect {
+	width: 100%;
+	height: 100%;
+}
+
+.linux-console-container {
+	width: 100%;
+	height: 100%;
+}
+
+.linux-console-container > .linux-console {
+	width: calc(100% - (var(--padding) * 2));
+	min-height: calc(100% - (var(--padding) * 2));
+	background: var(--consoleBgColor);
+	color: var(--consoleTextColor);
+	padding: var(--padding);
+	overflow-y: auto;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row,
+.linux-console-container > .linux-console > .linux-console-cmd-output {
+	width: calc(100% - (var(--padding) * 2));
+	display: flex;
+	margin-bottom: var(--padding);
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row > .linux-console-cmd-prompt {
+	width: auto;
+	float: left;
+	margin-right: 0.5em;
+	user-select: none;
+	white-space: nowrap;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row > .linux-console-cmd-prompt > .linux-console-cmd-prompt-user-info {
+	color: var(--consoleUserInfoTextColor);
+	margin-right: 0.1em;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row > .linux-console-cmd-prompt > .linux-console-cmd-prompt-curr-dir {
+	color: var(--consoleCurrDirTextColor);
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row > .linux-console-cmd-row-cmd-txt-container {
+	width: auto;
+	float: left;
+	flex-grow: 1;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-row > .linux-console-cmd-row-cmd-txt-container > .linux-console-cmd-row-cmd-txt {
+	width: 100%;
+	border: unset;
+	outline: unset;
+	padding: 0;
+	margin: 0;
+	background: transparent;
+	color: inherit;
+}
+
+.linux-console-empty-space {
+	width: 100%;
+	height: 100vh;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output {
+	flex-direction: column;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output > div:not(:last-child),
+.linux-console-container > .linux-console > .linux-console-cmd-output > div div:not(:last-child) {
+	margin-bottom: 1rem;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output p {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output p:not(:last-child) {
+	margin-bottom: 0.5rem;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output h1 {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.linux-console-container > .linux-console > .linux-console-cmd-output h1:not(:last-child) {
+	margin-bottom: 1rem;
+}
+
+.typing-effect.typing::after {
+	content: '|';
+	animation: blinkingText 1s infinite;
+}
+
+a,
+.text-link {
+	color: #FFD700;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFD700;
+	text-decoration: underline;
+}
+
+.m-0 {
+	margin: 0 !important;
+}
