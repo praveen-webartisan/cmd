@@ -1,5 +1,4 @@
 (function($) {
-	const matrixEffectTileSize = 20, matrixEffectFadeFactor = 0.05;
 	let commandIndex = -1, lastCommand = '';
 
 	const Storage = {
@@ -90,19 +89,22 @@
 		'now': function() {
 			return (new Date().toString());
 		},
+		'matrix': function() {
+			return '<div class="matrix-effect-container"><canvas class="matrix-effect"></canvas></div>';
+		},
 	};
 
-	function matrixEffect(canvas, context, columns, maxStackHeight) {
-		context.fillStyle = `rgba(0, 0, 0, ${matrixEffectFadeFactor})`;
+	function matrixEffect(matrixElem, canvas, context, columns, maxStackHeight) {
+		context.fillStyle = `rgba(0, 0, 0, ${matrixElem.prop('matrixEffectFadeFactor')})`;
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
-		context.font = (matrixEffectTileSize - 2) + 'px monospace';
+		context.font = (matrixElem.prop('matrixEffectTileSize') - 2) + 'px monospace';
 		context.fillStyle = 'rgb(0, 255, 0)';
 
 		for (let i = 0; i < columns.length; ++i) {
 			let randomChar = String.fromCharCode(33 + Math.floor(Math.random() * 94));
 
-			context.fillText(randomChar, columns[i].x, columns[i].stackCounter * matrixEffectTileSize + matrixEffectTileSize);
+			context.fillText(randomChar, columns[i].x, columns[i].stackCounter * matrixElem.prop('matrixEffectTileSize') + matrixElem.prop('matrixEffectTileSize'));
 
 			if (++columns[i].stackCounter >= columns[i].stackHeight) {
 				columns[i].stackHeight = 10 + Math.random() * maxStackHeight;
@@ -111,30 +113,33 @@
 		}
 
 		setTimeout(() => {
-			matrixEffect(canvas, context, columns, maxStackHeight);
+			matrixEffect(matrixElem, canvas, context, columns, maxStackHeight);
 		}, 50);
 	}
 
 	$.fn.initMatrixEffect = function() {
 		const canvas = this[0];
 
+		this.prop('matrixEffectTileSize', 18);
+		this.prop('matrixEffectFadeFactor', 0.05);
+
 		canvas.width = canvas.offsetWidth;
 		canvas.height = canvas.offsetHeight;
 
 		const context = canvas.getContext('2d');
 
-		const maxStackHeight = Math.ceil(canvas.height / matrixEffectTileSize);
+		const maxStackHeight = Math.ceil(canvas.height / this.prop('matrixEffectTileSize'));
 		let columns = [];
 
-		for (let i = 0; i < canvas.width / matrixEffectTileSize; ++i) {
+		for (let i = 0; i < canvas.width / this.prop('matrixEffectTileSize'); ++i) {
 			columns.push({
-				'x': i * matrixEffectTileSize,
+				'x': i * this.prop('matrixEffectTileSize'),
 				'stackHeight': 10 + Math.random() * maxStackHeight,
 				'stackCounter': 0,
 			});
 		}
 
-		matrixEffect(canvas, context, columns, maxStackHeight);
+		matrixEffect(this, canvas, context, columns, maxStackHeight);
 	};
 
 	function textTypingEffect(parentElem, elem, charIndex = 0, direction = 'right') {
@@ -257,6 +262,10 @@
 		commandIndex = -1;
 
 		renderCommandRow();
+
+		if ($('#linuxConsole').find('.linux-console-cmd-output:last').length > 0) {
+			$('#linuxConsole').find('.linux-console-cmd-output:last')[0].scrollIntoView();
+		}
 	}
 
 	function executeCommand(command) {
@@ -282,6 +291,10 @@
 			if ($('#linuxConsole').find('.linux-console-cmd-output:last .typing-effect').length > 0) {
 				initTypingEffect($('#linuxConsole').find('.linux-console-cmd-output:last'));
 			}
+
+			if ($('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').length > 0) {
+				$('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').initMatrixEffect();
+			}
 		}
 	}
 
@@ -293,9 +306,7 @@
 	});
 
 	function clearConsoleScreen(promptCmd = true) {
-		let linuxConsole = $('#linuxConsole');
-
-		linuxConsole.children('*').remove();
+		$('#linuxConsole > *').remove();
 
 		if (promptCmd) {
 			renderCommandRow();
@@ -386,9 +397,18 @@
 	$(document).ready(function() {
 		renderCommandRow();
 
-		$('.matrix-effect').each(function() {
+		let pageVisitCount = (Storage.get('pageVisitCount') || 0);
+
+		if (pageVisitCount == 0 && (Storage.get('history') || []).length == 0) {
+			$('#linuxConsole').find('.linux-console-cmd-row:last').find('.linux-console-cmd-row-cmd-txt').val('help');
+			onEnterPressed();
+		}
+
+		Storage.set('pageVisitCount', pageVisitCount + 1);
+
+		/*$('.matrix-effect').each(function() {
 			$(this).initMatrixEffect();
-		});
+		});*/
 	});
 
 }) (jQuery);

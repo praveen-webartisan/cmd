@@ -184,3 +184,8 @@ a:hover {
 	row-gap: 1em;
 	column-gap: 1em;
 }
+
+.linux-console .matrix-effect-container {
+	width: 100%;
+	height: 100vh;
+}
