@@ -323,6 +323,16 @@
 		</div>
 	</template>
 
+	<template id="tmplPasswd">
+		<div>
+			<p>
+				Generated Password: <a class="btnCopyText" data-copy-content="GENERATED_PASSWORD" href="javascript:void(0);" title="Click to Copy">
+					GENERATED_PASSWORD <i class="icofont-ui-copy icon-default"></i> <i class="icofont-check icon-copied hide"></i>
+				</a>
+			</p>
+		</div>
+	</template>
+
 	<template id="tmplHelp">
 		<div>
 			<h3>Hello there 👋</h3>
@@ -371,6 +381,34 @@
 			<div>
 				<span class="text-link clickable execute-cmd" data-cmd="matrix">matrix</span>
 				<p>Show <span style="color: #0f0;">matrix</span> effect</p>
+			</div>
+
+			<div>
+				<span class="text-link clickable execute-cmd" data-cmd="passwd">passwd</span>
+				<dl>
+					<dt>Generate Random Password. options:</dt>
+					<dd>
+						<dl>
+							<dt>l (length)</dt>
+							<dd> - Length of the Password to be generated. Value must be a valid number.
+								<br>
+								e.g: <span class="text-link clickable execute-cmd" data-cmd="passwd l=10">passwd l=10</span>
+							</dd>
+
+							<dt>s (special characters)</dt>
+							<dd> - Allow or restrict Special characters. Value must be either True or False. e.g:
+								<br>
+								<span class="text-link clickable execute-cmd" data-cmd="passwd s=false">passwd s=false</span>
+							</dd>
+
+							<dt>n (numbers)</dt>
+							<dd> - Allow or restrict Numbers. Value must be either True or False. e.g:
+								<br>
+								<span class="text-link clickable execute-cmd" data-cmd="passwd n=false">passwd n=false</span>
+							</dd>
+						</dl>
+					</dd>
+				</dl>
 			</div>
 
 			<div>

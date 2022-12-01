@@ -107,6 +107,7 @@ html, body {
 
 .linux-console-container > .linux-console > .linux-console-cmd-output {
 	flex-direction: column;
+	word-break: break-all;
 }
 
 .linux-console-container > .linux-console > .linux-console-cmd-output > div:not(:last-child),
@@ -188,4 +189,20 @@ a:hover {
 .linux-console .matrix-effect-container {
 	width: 100%;
 	height: 100vh;
+}
+
+.txt-click-to-copy {
+	display: none !important;
+}
+
+*.hide {
+	display: none !important;
+}
+
+dl {
+	margin: 0 !important;
+}
+
+dl > dt:not(:first-child) {
+	margin-top: 0.5rem;
 }

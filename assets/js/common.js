@@ -1,5 +1,9 @@
 (function($) {
 	let commandIndex = -1, lastCommand = '';
+	// ASCII codes of characters not allowed in password fields
+	const pwdFieldBlockedCharacters = [
+		34, 39, 44, 96
+	];
 
 	const Storage = {
 		'storageClass': localStorage,
@@ -91,6 +95,41 @@
 		},
 		'matrix': function() {
 			return '<div class="matrix-effect-container"><canvas class="matrix-effect"></canvas></div>';
+		},
+		'passwd': function() {
+			const defaultPasswordLength = 8;
+			const maxPasswordLength = 200;
+			let length = defaultPasswordLength, symbols = true, numbers = true;
+
+			for (let i = 0; i < arguments.length; i++) {
+				let option = arguments[i].split('=');
+
+				if (option.length == 2) {
+					if (option[0].trim().toLowerCase() == 's') {
+						symbols = option[1].trim().toLowerCase() != 'false';
+					} else if (option[0].trim().toLowerCase() == 'n') {
+						numbers = option[1].trim().toLowerCase() != 'false';
+					} else if (option[0].trim().toLowerCase() == 'l') {
+						length = option[1].trim().toLowerCase();
+
+						if (length) {
+							length = Number(length);
+
+							if (length != isNaN && Number.isInteger(length)) {
+								if (length > maxPasswordLength) {
+									length = maxPasswordLength;
+								}
+							} else {
+								Number.isInteger = defaultPasswordLength;
+							}
+						} else {
+							length = defaultPasswordLength;
+						}
+					}
+				}
+			}
+
+			return $('#tmplPasswd').html().replace(/\GENERATED\_PASSWORD/g, generateRandomPassword(length, symbols, numbers));
 		},
 	};
 
@@ -392,6 +431,102 @@
 		let commandToExecute = $(this).attr('data-cmd');
 		$('#linuxConsole').find('.linux-console-cmd-row:last').find('.linux-console-cmd-row-cmd-txt').val(commandToExecute);
 		onEnterPressed();
+	});
+
+	function preparePasswordCharacters(symbols = true, numbers = true) {
+		let allowedCharacters = [];
+
+		// Uppercase Alphabets
+		for (var i = 65; i <= 90; i++) {
+			allowedCharacters.push(String.fromCharCode(i));
+		}
+
+		// Lowercase Alphabets
+		for (var i = 97; i <= 122; i++) {
+			allowedCharacters.push(String.fromCharCode(i));
+		}
+
+		if (numbers) {
+			// Numbers
+			for (var i = 48; i <= 57; i++) {
+				allowedCharacters.push(String.fromCharCode(i));
+			}
+		}
+
+		if (symbols) {
+			// Symbols
+			for (var i = 33; i <= 47; i++) {
+				allowedCharacters.push(String.fromCharCode(i));
+			}
+
+			// Symbols
+			for (var i = 58; i <= 64; i++) {
+				allowedCharacters.push(String.fromCharCode(i));
+			}
+
+			// Symbols
+			for (var i = 91; i <= 96; i++) {
+				allowedCharacters.push(String.fromCharCode(i));
+			}
+
+			// Symbols
+			for (var i = 123; i <= 126; i++) {
+				allowedCharacters.push(String.fromCharCode(i));
+			}
+		}
+
+		for (var i = 0; i < pwdFieldBlockedCharacters.length; i++) {
+			let indexOfChar = allowedCharacters.indexOf( String.fromCharCode(pwdFieldBlockedCharacters[i]) );
+
+			if (indexOfChar > -1) {
+				allowedCharacters.splice(indexOfChar, 1);
+			}
+		}
+
+		return allowedCharacters;
+	}
+
+	function generateRandomPassword(length = 8, symbols = true, numbers = true) {
+		let password = '';
+		let allowedCharacters = preparePasswordCharacters(symbols, numbers);
+
+		for (var i = 0; i < length; i++) {
+			password += allowedCharacters[ Math.floor(Math.random() * allowedCharacters.length) ]
+		}
+
+		return password;
+	}
+
+	$(document).on('click', '.btnCopyText', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (!($(this).hasClass('copying') || $(this).hasClass('copied'))) {
+			$(this).addClass('copying');
+
+			$('.txt-click-to-copy').remove();
+
+			$('body').append(`<input type="text" class="txt-click-to-copy" value="${ $(this).attr('data-copy-content') }">`);
+
+			let txtCopy = $('.txt-click-to-copy')[0];
+
+			txtCopy.select();
+			txtCopy.setSelectionRange(0, 9999);
+
+			navigator.clipboard.writeText(txtCopy.value);
+
+			$(this).removeClass('copying').addClass('copied');
+
+			$(this).children('.icon-default').addClass('hide');
+			$(this).children('.icon-copied').removeClass('hide');
+
+			setTimeout(() => {
+				$(this).removeClass('copied');
+
+				$(this).children('.icon-copied').addClass('hide');
+				$(this).children('.icon-default').removeClass('hide');
+			}, 2000);
+		}
 	});
 
 	$(document).ready(function() {
