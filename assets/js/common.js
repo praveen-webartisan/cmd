@@ -307,6 +307,18 @@
 		}
 	}
 
+	function renderCommandOutput(output) {
+		$('#linuxConsole').find('.linux-console-cmd-row:last').after($('#tmplCommandOutput').html().replace('OUTPUT', output));
+
+		if ($('#linuxConsole').find('.linux-console-cmd-output:last .typing-effect').length > 0) {
+			initTypingEffect($('#linuxConsole').find('.linux-console-cmd-output:last'));
+		}
+
+		if ($('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').length > 0) {
+			$('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').initMatrixEffect();
+		}
+	}
+
 	function executeCommand(command) {
 		command = command.toLowerCase().trim();
 		// Array.filter(element => element) to remove empty elements
@@ -325,15 +337,7 @@
 				}
 			}
 
-			$('#linuxConsole').find('.linux-console-cmd-row:last').after($('#tmplCommandOutput').html().replace('OUTPUT', output));
-
-			if ($('#linuxConsole').find('.linux-console-cmd-output:last .typing-effect').length > 0) {
-				initTypingEffect($('#linuxConsole').find('.linux-console-cmd-output:last'));
-			}
-
-			if ($('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').length > 0) {
-				$('#linuxConsole').find('.linux-console-cmd-output:last .matrix-effect').initMatrixEffect();
-			}
+			renderCommandOutput(output);
 		}
 	}
 
@@ -541,9 +545,16 @@
 
 		Storage.set('pageVisitCount', pageVisitCount + 1);
 
-		/*$('.matrix-effect').each(function() {
-			$(this).initMatrixEffect();
-		});*/
+		let lastUpdateNo = Storage.get('updateNo') || 0;
+		let newUpdateNo = $('#tmplNewUpdate').attr('data-update-no') || 0;
+
+		if (newUpdateNo > lastUpdateNo) {
+			renderCommandOutput($('#tmplNewUpdate').html());
+
+			renderCommandRow();
+
+			Storage.set('updateNo', newUpdateNo);
+		}
 	});
 
 }) (jQuery);
