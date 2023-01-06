@@ -206,3 +206,20 @@ dl {
 dl > dt:not(:first-child) {
 	margin-top: 0.5rem;
 }
+
+::-webkit-scrollbar {
+	width: 2px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--consoleBgColor);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--consoleBgColor);
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.5);
+}
